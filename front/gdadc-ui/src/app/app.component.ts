@@ -4,7 +4,10 @@ import { BookingsComponent } from './pages/booking/bookings/bookings.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [
+    RouterOutlet,
+    BookingsComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
