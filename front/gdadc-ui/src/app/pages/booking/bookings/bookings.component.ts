@@ -38,7 +38,7 @@ export class BookingsComponent implements OnInit {
     'created_at',
     'updated_at'];
 
-
+  activeTab = 'bookings';
   apiService = inject(ApiService);
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
