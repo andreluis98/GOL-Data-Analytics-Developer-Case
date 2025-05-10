@@ -23,9 +23,14 @@
         <input formControlName="birthday" type="date" [max]="today"/>
     </label>
 
-    <label>
+    <label class="input-wrapper">
         Document
         <input formControlName="document" />
+        @if (bookingForm.get('document')?.hasError('documentExists')) {
+            <mat-error class="error-message">
+                This document number is already registered.
+            </mat-error>   
+        }
     </label>
 
     <label>

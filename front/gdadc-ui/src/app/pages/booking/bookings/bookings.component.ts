@@ -172,7 +172,8 @@ export class BookingsComponent implements OnInit {
     const dialogRef = this.dialog.open(CreateBookingComponent, {
       width: '600px',
       height: '500px',
-      panelClass: 'custom-dialog-container'
+      panelClass: 'custom-dialog-container',
+      data: this.dataSource.data
     });
     dialogRef.afterClosed().subscribe(result => {
       result == true ? this.getBookings() : null;
