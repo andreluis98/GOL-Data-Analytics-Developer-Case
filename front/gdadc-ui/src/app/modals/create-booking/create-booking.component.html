@@ -1,0 +1,55 @@
+<div class="dialog-header">
+    <h2>Criar Reserva</h2>
+    <div class="header-actions">
+        <button type="button" class="clear-btn-top" (click)="clearForm()">Clear All Filters</button>
+        <button type="button" class="close-btn" (click)="dialogRef.close(false)">✕</button>
+    </div>
+</div>
+
+
+<form [formGroup]="bookingForm" (ngSubmit)="createBooking()" class="booking-form">
+    <label>
+        First Name
+        <input formControlName="first_name" />
+    </label>
+
+    <label>
+        Last Name
+        <input formControlName="last_name" />
+    </label>
+
+    <label>
+        Data de Nascimento
+        <input formControlName="birthday" type="date" [max]="today"/>
+    </label>
+
+    <label>
+        Document
+        <input formControlName="document" />
+    </label>
+
+    <label>
+        Data de Partida
+        <input formControlName="departure_date" type="date" [min]="today" />
+    </label>
+
+    <label>
+        Departure IATA
+        <input formControlName="departure_iata" />
+    </label>
+
+    <label>
+        Arrival IATA
+        <input formControlName="arrival_iata" />
+    </label>
+
+    <label>
+        Data de Chegada
+        <input formControlName="arrival_date" type="date" [min]="today" />
+    </label>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-booking" [disabled]="!bookingForm.valid">Criar Reserva</button>
+        <button type="button" class="cancel-btn" (click)="dialogRef.close()">Cancelar</button>
+    </div>
+</form>
