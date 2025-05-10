@@ -5,16 +5,27 @@
       GOL Analytics
     </div>
     <div class="app-tabs">
-      <button class="app-tab">
+      <button 
+      [class.active]="activeTab === 'bookings'"
+      (click)="setActiveTab('bookings')"
+      [routerLink]="['/bookings']"
+      class="app-tab">
         Booking Management
       </button>
-      <button class="app-tab">
+      <button 
+      [class.active]="activeTab === 'dashboard'"
+      (click)="setActiveTab('dashboard')"
+      [routerLink]="['/dashboard']"
+       class="app-tab">
         Dashboard KPIs
       </button>
     </div>
   </nav>
   <main class="main-content">
-    <app-bookings></app-bookings>
+    @if(activeTab === 'bookings'){
+      <app-bookings></app-bookings>
+    }@else if(activeTab === 'dashboard') {
+      <app-dashboard></app-dashboard>
+    }
   </main>
 </div>
-<router-outlet></router-outlet>
