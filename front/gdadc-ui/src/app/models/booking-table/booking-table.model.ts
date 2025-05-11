@@ -7,7 +7,7 @@ export interface BookingTable {
   departure_iata: string,
   arrival_iata: string,
   arrival_date: string,
-  created_at?: string
-  id?: number
-  updated_at?: string
+  created_at?: string,
+  id?: number,
+  updated_at?: string,
 }
