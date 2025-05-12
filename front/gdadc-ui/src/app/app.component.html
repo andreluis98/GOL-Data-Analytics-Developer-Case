@@ -6,26 +6,24 @@
     </div>
     <div class="app-tabs">
       <button 
-      [class.active]="activeTab === 'bookings'"
-      (click)="setActiveTab('bookings')"
-      [routerLink]="['/bookings']"
-      class="app-tab">
-        Booking Management
-      </button>
-      <button 
-      [class.active]="activeTab === 'dashboard'"
-      (click)="setActiveTab('dashboard')"
-      [routerLink]="['/dashboard']"
-       class="app-tab">
-        Dashboard KPIs
-      </button>
+          routerLink="/bookings"
+          routerLinkActive="active"
+          class="app-tab"
+          [disabled]="isLoading"
+        >
+          Booking Management
+    </button>
+    <button 
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      class="app-tab"
+      [disabled]="isLoading"
+    >
+      Dashboard KPIs
+    </button>
     </div>
   </nav>
   <main class="main-content">
-    @if(activeTab === 'bookings'){
-      <app-bookings></app-bookings>
-    }@else if(activeTab === 'dashboard') {
-      <app-dashboard></app-dashboard>
-    }
+    <router-outlet></router-outlet>
   </main>
 </div>

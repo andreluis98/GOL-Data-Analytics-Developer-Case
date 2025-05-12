@@ -1,20 +1,26 @@
 <div class="mat-elevation-z8">
-  <div class="title">
-    <h2>Booking Management</h2>
-  </div>
-  
-    
-      @if(this.isLoading){
-        <div class="filter-title">
-          <div class="table-actions">
+  @if(isLoading){
+    <div class="title">
+      <h2 class="skeleton skeleton-title"></h2>
+    </div>
+    <div class="filter-title">
+      <div class="table-actions">
         <div class="skeleton skeleton-btn"></div>
         <div class="skeleton skeleton-btn"></div>
         <div class="skeleton skeleton-btn"></div>
-        </div>
-        </div>
-      } @else {
-        <div class="filter-title">
-        <div class="table-actions">
+      </div>
+    </div>
+    <div class="table-container">
+      <div class="skeleton-table">
+        <div *ngFor="let i of [1,2,3,4,5]" class="skeleton skeleton-row"></div>
+      </div>
+    </div>
+  }@else {
+    <div class="title">
+      <h2>Booking Management</h2>
+    </div>
+    <div class="filter-title">
+      <div class="table-actions">
         <button class="material-btn-outline" (click)="createBookingModal()">
           <span class="material-symbol">add</span>
           Create Booking
@@ -33,16 +39,7 @@
         <mat-label> Type to filter </mat-label>
         <input matInput (keyup)="applyFilter($event)">
       </mat-form-field>
-      </div>
-      }
-
-  @if(this.isLoading){
-    <div class="table-container">
-      <div class="skeleton-table">
-        <div *ngFor="let i of [1,2,3,4,5]" class="skeleton skeleton-row"></div>
-      </div>
     </div>
-  } @else{
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full material-table">
   
@@ -100,8 +97,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>
+    <mat-paginator [pageSize]="150" [pageSizeOptions]="[5, 10, 20, 50, 150, 300, 500, 700, 1000]" showFirstLastButtons>
+    </mat-paginator>
   }
-  <mat-paginator [pageSize]="150" [pageSizeOptions]="[5, 10, 20, 50, 150, 300, 500, 700, 1000]" showFirstLastButtons>
-  </mat-paginator>
-
 </div>

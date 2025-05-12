@@ -1,23 +1,30 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { BookingsComponent } from "./pages/booking/bookings/bookings.component";
-import { DashboardComponent } from "./pages/dashboard/dashboard/dashboard.component";
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { LoadingService, LoadingState } from './core/loading/loading.service';
 
 @Component({
   selector: 'app-root',
   imports: [
-    // RouterOutlet,
-    BookingsComponent,
+    RouterOutlet,
     RouterLink,
-    DashboardComponent
+    RouterLinkActive
 ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'gdadc-ui';
-  activeTab = 'bookings';
-  setActiveTab(tab: string): void {
-    this.activeTab = tab;
+  private loadingService = inject(LoadingService);
+  
+  isLoading = false;
+  currentPage = '';
+
+  constructor(){
+    this.loadingService.loading$.subscribe((state: LoadingState) => {
+      setTimeout(() => {
+        this.isLoading = state.loading;
+        this.currentPage = state.page;
+      });
+    });
   }
 }

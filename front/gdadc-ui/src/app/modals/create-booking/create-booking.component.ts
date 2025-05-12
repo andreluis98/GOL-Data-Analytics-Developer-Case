@@ -2,7 +2,7 @@ import { Component, Inject, inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BookingTable } from '../../models/booking-table/booking-table.model';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ApiService } from '../../core/api.service';
+import { ApiService } from '../../core/api/api.service';
 import { catchError, tap } from 'rxjs';
 import Swal from 'sweetalert2';
 import { DatePipe } from '@angular/common';
@@ -15,11 +15,11 @@ import { MatError } from '@angular/material/form-field';
   styleUrl: './create-booking.component.scss'
 })
 export class CreateBookingComponent implements OnInit {
-  apiService = inject(ApiService);
-  dialogRef = inject(MatDialogRef<CreateBookingComponent>);
-  fb = inject(FormBuilder);
-  datePipe = inject(DatePipe);
-  data = inject(MAT_DIALOG_DATA);
+ private apiService = inject(ApiService);
+ private fb = inject(FormBuilder);
+ private datePipe = inject(DatePipe);
+ private data = inject(MAT_DIALOG_DATA);
+ dialogRef = inject(MatDialogRef<CreateBookingComponent>);
   bookingTable!: BookingTable;
   bookingForm!: FormGroup;
   today: string | null = null;
@@ -53,9 +53,13 @@ export class CreateBookingComponent implements OnInit {
       this.apiService.createBooking(this.bookingTable).pipe(
         tap(() => {
           Swal.fire({
+            toast: true,
+            position: 'top-end',
             icon: 'success',
-            title: 'Sucess',
-            text: 'Booking successfully made',
+            title: 'Reserva criada com sucesso!',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
           }).then((result) => {
             if (result.isConfirmed) {
               ;
@@ -65,10 +69,14 @@ export class CreateBookingComponent implements OnInit {
         }),
         catchError((error) => {
           Swal.fire({
+            toast: true,
+            position: 'top-end',
             icon: 'error',
-            title: 'Erro!',
-            text: `${error.error.message}`,
-          })
+            title: 'Erro ao criar a reserva.',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });          
           return ''
         })
       ).subscribe();
