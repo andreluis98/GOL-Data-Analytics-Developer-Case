@@ -54,6 +54,13 @@
   .main-content {
     padding: 1rem;
   }
+
+  .app-tab[disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+  
   
   @media (max-width: 640px) {
     .app-nav {

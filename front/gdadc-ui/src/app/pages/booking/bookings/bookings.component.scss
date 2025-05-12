@@ -130,6 +130,14 @@
   animation: pulse 1.5s infinite ease-in-out;
 }
 
+.skeleton-title {
+  width: 240px;
+  height: 36px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
 .skeleton-btn {
   width: 140px;
   height: 36px;
@@ -151,6 +159,10 @@
   height: 48px;
   margin-bottom: 10px;
   border-radius: 4px;
+}
+
+::ng-deep .swal2-container.swal2-top-end.swal2-backdrop-show{
+    width: 401px;
 }
 
 @keyframes pulse {

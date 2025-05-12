@@ -9,7 +9,7 @@
 
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  
+
   --primary: 210 100% 50%;
   --primary-foreground: 0 0% 100%;
   --primary-title: 19.94deg 100% 53.45%;
@@ -202,7 +202,6 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
-/* Backgrounds */
 .bg-green-100 {
   background-color: rgba(34, 197, 94, 0.1);
 }
@@ -227,23 +226,6 @@ body {
   background-color: hsl(var(--primary));
 }
 
-@media (min-width: 768px) {
-  .md\:w-64 {
-    width: 16rem;
-  }
-  
-  .md\:col-span-2 {
-    grid-column: span 2 / span 2;
-  }
-}
-
-@font-face {
-  font-family: 'Material Symbols Outlined';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v107/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1n-q_4MrImHCIJIZrDCvHOej.woff2) format('woff2');
-}
-
 .material-symbol {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -259,16 +241,40 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Overflow */
 .overflow-x-auto {
   overflow-x: auto;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-/* styles.scss */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
 .custom-dialog-container {
   border-radius: 16px;
   background-color: #ffffff;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v107/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1n-q_4MrImHCIJIZrDCvHOej.woff2) format('woff2');
+}
+
+@media (min-width: 768px) {
+  .md\:w-64 {
+    width: 16rem;
+  }
+
+  .md\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+}

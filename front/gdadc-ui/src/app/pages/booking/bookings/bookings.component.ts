@@ -1,7 +1,7 @@
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ApiService } from '../../../core/api.service';
-import { CommonModule } from '@angular/common';
-import { catchError, Observable, Subscription, take, tap, throwError } from 'rxjs';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ApiService } from '../../../core/api/api.service';
+import { CommonModule, DatePipe } from '@angular/common';
+import { catchError, Observable, Subject, tap } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -12,6 +12,7 @@ import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateBookingComponent } from '../../../modals/create-booking/create-booking.component';
 import Swal from 'sweetalert2';
+import { LoadingService } from '../../../core/loading/loading.service';
 @Component({
   selector: 'app-bookings',
   imports: [
@@ -38,43 +39,52 @@ export class BookingsComponent implements OnInit {
     'created_at',
     'updated_at'];
 
-  activeTab = 'bookings';
-  apiService = inject(ApiService);
-  fb = inject(FormBuilder);
-  dialog = inject(MatDialog);
+  private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private loadingService = inject(LoadingService);
+  private datePipe = inject(DatePipe);
   bookings!: Observable<BookingTable[]>;
   file: File | null = null;
   isLoading: boolean = true;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  dataSource = new MatTableDataSource<BookingTable>();
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
+    dataSource = new MatTableDataSource<BookingTable>();
 
+    ngOnInit() {
+      this.getBookings();
+    }
 
-  ngOnInit() {
-    this.getBookings();
-  }
-
-  getBookings() {
-    this.apiService.getBookings().pipe(
-      tap((resp: any) => {
-        this.dataSource.data = resp.data;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.dataSource.sortingDataAccessor = (data: BookingTable, col: string) => this.sorts(data, col);
-        this.dataSource.filterPredicate = (data: BookingTable, filter: string) => this.adjustFiltersTable(data, filter);
-        this.isLoading = false;
-      }),
-      catchError((err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error loading bookings',
-          text: `Failed to load bookings: ${err}`,
-        });
-        return '';
-      })
-    ).subscribe()
-  }
+    getBookings() {
+      this.loadingService.setLoading({ page: 'bookings', loading: true });
+      this.apiService.getBookings().pipe(
+        tap((resp: any) => {
+          this.dataSource = new MatTableDataSource(resp.data);
+          this.dataSource.sortingDataAccessor = (data: BookingTable, col: string) => this.sorts(data, col);
+          this.dataSource.filterPredicate = (data: BookingTable, filter: string) => this.adjustFiltersTable(data, filter);
+          this.isLoading = false;
+          
+          this.cdr.detectChanges();
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.loadingService.setLoading({ page: 'bookings', loading: false });
+        }),
+        catchError((err) => {
+          this.loadingService.setLoading({ page: 'bookings', loading: false });
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: `Unable to load bookings. Please try again later ${err.message}.`,
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true
+          });
+          return '';
+        })
+      ).subscribe()
+    }
 
 
   download() {
@@ -99,19 +109,25 @@ export class BookingsComponent implements OnInit {
         Swal.close();
 
         Swal.fire({
+          toast: true,
+          position: 'top-end',
           icon: 'success',
-          title: 'Download completed!',
+          title: 'Bookings downloaded successfully!',
           showConfirmButton: false,
-          timer: 1500
+          timer: 3000,
+          timerProgressBar: true
         });
       }),
       catchError((err) => {
         Swal.close();
-
         Swal.fire({
+          toast: true,
+          position: 'top-end',
           icon: 'error',
-          title: 'Download error',
-          text: 'The file could not be downloaded.',
+          title: `Failed to download bookings ${err.message}.`,
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true
         });
         return '';
       })
@@ -147,20 +163,26 @@ export class BookingsComponent implements OnInit {
           Swal.close();
 
           Swal.fire({
+            toast: true,
+            position: 'top-end',
             icon: 'success',
-            title: 'Upload completed!',
+            title: 'Bookings uploaded successfully!',
             showConfirmButton: false,
-            timer: 1500
-          });                  
+            timer: 3000,
+            timerProgressBar: true
+          });               
         }),
         catchError((err) => {
           Swal.close();
-
-          Swal.fire({
-            icon: 'error',
-            title: 'Upload error',
-            text: 'The file could not be uploaded.',
-          });
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'error',
+              title: `Failed to upload bookings ${err.message}.`,
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true
+            });
           return '';
         })
       ).subscribe();
@@ -180,22 +202,9 @@ export class BookingsComponent implements OnInit {
     });
   }
 
-  formatDateString(dateStr: string | Date): Date | null {
-    if (dateStr instanceof Date) {
-      return isNaN(dateStr.getTime()) ? null : dateStr;
-    }
-
-    if (typeof dateStr === 'string' && dateStr.includes('/')) {
-      const [day, month, year] = dateStr.split('/');
-      const date = new Date(+year, +month - 1, +day);
-      return isNaN(date.getTime()) ? null : date;
-    }
-
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
-
   sorts(data: any, col: string) {
+    console.log(data, col);
+    
     const datas = data[col];
     const convertString = (text: string): string => {
       // Convertendo strings com acentos para que conseguia realizar o sort corretamente.
@@ -221,20 +230,32 @@ export class BookingsComponent implements OnInit {
   };
 
   adjustFiltersTable(record: BookingTable, filter: string) {
-    const normalize = (text: string) => text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const normalize = (text: string) =>
+      text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  
     const filterValue = normalize(filter);
+  
+    const formatDateToDisplay = (dateStr: string): string => {
+      if (!dateStr) return '';
+      return this.datePipe.transform(dateStr, 'dd/MM/yyyy') || ''; 
+    };
+  
     const fields = [
-      record.first_name,
-      record.last_name,
-      record.birthday,
-      record.document,
-      record.departure_date,
-      record.arrival_date,
-      record.departure_iata,
-      record.arrival_iata
+      normalize(record.first_name),
+      normalize(record.last_name),
+      normalize(formatDateToDisplay(record.birthday)),
+      normalize(record.document),
+      normalize(formatDateToDisplay(record.departure_date)),
+      normalize(formatDateToDisplay(record.arrival_date)),
+      normalize(record.departure_iata),
+      normalize(record.arrival_iata),
     ];
-    return fields.some((field) => normalize(field).includes(filterValue));
+  
+    return fields.some((field) => field.includes(filterValue));
   }
+  
+  
+  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
