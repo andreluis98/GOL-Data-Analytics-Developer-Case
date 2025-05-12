@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../../../core/api/api.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { catchError, Observable, Subject, tap } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -43,6 +43,7 @@ export class BookingsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private loadingService = inject(LoadingService);
+  private datePipe = inject(DatePipe);
   bookings!: Observable<BookingTable[]>;
   file: File | null = null;
   isLoading: boolean = true;
@@ -201,21 +202,6 @@ export class BookingsComponent implements OnInit {
     });
   }
 
-  formatDateString(dateStr: string | Date): Date | null {
-    if (dateStr instanceof Date) {
-      return isNaN(dateStr.getTime()) ? null : dateStr;
-    }
-
-    if (typeof dateStr === 'string' && dateStr.includes('/')) {
-      const [day, month, year] = dateStr.split('/');
-      const date = new Date(+year, +month - 1, +day);
-      return isNaN(date.getTime()) ? null : date;
-    }
-
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
-
   sorts(data: any, col: string) {
     console.log(data, col);
     
@@ -244,26 +230,32 @@ export class BookingsComponent implements OnInit {
   };
 
   adjustFiltersTable(record: BookingTable, filter: string) {
-    const normalize = (text: string) => text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const normalize = (text: string) =>
+      text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  
     const filterValue = normalize(filter);
-
+  
     const formatDateToDisplay = (dateStr: string): string => {
-      const [year, month, day] = dateStr.split("-");
-      return `${day}/${month}/${year}`;
+      if (!dateStr) return '';
+      return this.datePipe.transform(dateStr, 'dd/MM/yyyy') || ''; 
     };
-
+  
     const fields = [
-      record.first_name,
-      record.last_name,
-      normalize(formatDateToDisplay(`${record.birthday}`)),
-      record.document,
-      normalize(formatDateToDisplay(`${record.departure_date}`)),
-      normalize(formatDateToDisplay(`${record.arrival_date}`)),
-      record.departure_iata,
-      record.arrival_iata
+      normalize(record.first_name),
+      normalize(record.last_name),
+      normalize(formatDateToDisplay(record.birthday)),
+      normalize(record.document),
+      normalize(formatDateToDisplay(record.departure_date)),
+      normalize(formatDateToDisplay(record.arrival_date)),
+      normalize(record.departure_iata),
+      normalize(record.arrival_iata),
     ];
-    return fields.some((field) => normalize(field).includes(filterValue));
+  
+    return fields.some((field) => field.includes(filterValue));
   }
+  
+  
+  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

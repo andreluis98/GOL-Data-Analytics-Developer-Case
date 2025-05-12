@@ -27,7 +27,7 @@ import { LoadingService } from '../../../core/loading/loading.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit, OnDestroy  {
+export class DashboardComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['date', 'iatapair', 'departures', 'arrivals'];
   activeTab = 'dashboard';
   private apiService = inject(ApiService);
@@ -131,16 +131,14 @@ export class DashboardComponent implements OnInit, OnDestroy  {
   customFiltersTable(record: DashboardTable, filter: string) {
     const normalize = (text: string | number) => text.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const filterValue = normalize(filter);
-    
+
     const formatDateToDisplay = (dateStr: string): string => {
       const [year, month, day] = dateStr.split("-");
       return `${day}/${month}/${year}`;
     };
-  
+
     const fields = [
-      normalize(record.arrivals),
       normalize(formatDateToDisplay(record.date)),
-      normalize(String(record.departures)),
       normalize(record.iatapair)
     ];
 

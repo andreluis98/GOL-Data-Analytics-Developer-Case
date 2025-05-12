@@ -15,11 +15,11 @@ import { MatError } from '@angular/material/form-field';
   styleUrl: './create-booking.component.scss'
 })
 export class CreateBookingComponent implements OnInit {
- private apiService = inject(ApiService);
- private fb = inject(FormBuilder);
- private datePipe = inject(DatePipe);
- private data = inject(MAT_DIALOG_DATA);
- dialogRef = inject(MatDialogRef<CreateBookingComponent>);
+  private apiService = inject(ApiService);
+  private fb = inject(FormBuilder);
+  private datePipe = inject(DatePipe);
+  private data = inject(MAT_DIALOG_DATA);
+  dialogRef = inject(MatDialogRef<CreateBookingComponent>);
   bookingTable!: BookingTable;
   bookingForm!: FormGroup;
   today: string | null = null;
@@ -76,7 +76,7 @@ export class CreateBookingComponent implements OnInit {
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true
-          });          
+          });
           return ''
         })
       ).subscribe();

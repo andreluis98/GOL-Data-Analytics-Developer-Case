@@ -23,12 +23,6 @@
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 768px) {
-  .charts-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 .dashboard-card {
   background-color: hsl(var(--card));
   border-radius: 0.5rem;
@@ -212,18 +206,39 @@
   height: calc(50% + 50px * var(--bar-scale));
 }
 
-.skeleton-bar-chart .bar:nth-child(1) { --bar-scale: 0.2; }
-.skeleton-bar-chart .bar:nth-child(2) { --bar-scale: 0.5; }
-.skeleton-bar-chart .bar:nth-child(3) { --bar-scale: 0.8; }
-.skeleton-bar-chart .bar:nth-child(4) { --bar-scale: 0.4; }
-.skeleton-bar-chart .bar:nth-child(5) { --bar-scale: 0.7; }
-.skeleton-bar-chart .bar:nth-child(6) { --bar-scale: 0.6; }
-.skeleton-bar-chart .bar:nth-child(7) { --bar-scale: 0.3; }
+.skeleton-bar-chart .bar:nth-child(1) {
+  --bar-scale: 0.2;
+}
+
+.skeleton-bar-chart .bar:nth-child(2) {
+  --bar-scale: 0.5;
+}
+
+.skeleton-bar-chart .bar:nth-child(3) {
+  --bar-scale: 0.8;
+}
+
+.skeleton-bar-chart .bar:nth-child(4) {
+  --bar-scale: 0.4;
+}
+
+.skeleton-bar-chart .bar:nth-child(5) {
+  --bar-scale: 0.7;
+}
+
+.skeleton-bar-chart .bar:nth-child(6) {
+  --bar-scale: 0.6;
+}
+
+.skeleton-bar-chart .bar:nth-child(7) {
+  --bar-scale: 0.3;
+}
 
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -234,14 +249,15 @@
   0% {
     background-color: #e0e0e0;
   }
+
   50% {
     background-color: #f0f0f0;
   }
+
   100% {
     background-color: #e0e0e0;
   }
 }
-
 
 @media (max-width: 768px) {
   .charts-grid {
@@ -255,5 +271,11 @@
   .material-table {
     display: block;
     overflow-x: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

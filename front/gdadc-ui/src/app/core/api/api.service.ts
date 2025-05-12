@@ -13,21 +13,11 @@ export class ApiService {
   private http = inject(HttpClient);
   private headerToken = inject(AuthService);
   private baseURL = `${environment.apiUrl}/api/v1/`;
-  private bookings$: Observable<BookingTable[]> | null = null;
 
   // List all Bookings
   getBookings(){
     return this.http.get<BookingTable>(`${this.baseURL}booking`, { headers: this.headerToken.headers})
   }
-
-  // getBookings(){
-  //   if(!this.bookings$){
-  //     this.bookings$ = this.http.get<BookingTable[]>(`${this.baseURL}booking`, { headers: this.headerToken.headers}).pipe(
-  //       shareReplay(1)
-  //     );
-  //   }
-  //   return this.bookings$;
-  // }
 
   //Download
   downloadFile(): Observable<Blob> {
