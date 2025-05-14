@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -23,22 +23,24 @@ import { LoadingService } from '../../../core/loading/loading.service';
     MatFormFieldModule,
     MatInputModule,
     ChartComponent
-  ],
+],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  displayedColumns: string[] = ['date', 'iatapair', 'departures', 'arrivals'];
-  activeTab = 'dashboard';
+  displayedColumns: string[] = ['date', 'departure_iata', 'arrival_iata', 'departures', 'arrivals'];
   private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
-  loadingService = inject(LoadingService);
-  charts: ChartData[] = [];
-  isLoading: boolean = true;
-
+  loadingService = inject(LoadingService); 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   dataSource = new MatTableDataSource<DashboardTable>();
+  
+  charts: ChartData[] = [];
+  isLoading: boolean = true;
+  disableAllControls = true;
+  noChartData!: boolean[];
   ngOnInit(): void {
     this.getDashboardTable();
     this.loadChartsData();
@@ -55,10 +57,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap((resp: any) => {
         this.dataSource.data = resp.data;
+        this.isLoading = false;
+         this.cdr.detectChanges();
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.dataSource.filterPredicate = (data: DashboardTable, filter: string) => this.customFiltersTable(data, filter);
-        this.isLoading = false;
         this.loadingService.setLoading({ page: 'dashboard', loading: false });
       }),
       catchError((err) => {
@@ -69,6 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           icon: 'error',
           title: `Failed to load dashboard data ${err.message}.`,
           showConfirmButton: false,
+          showCloseButton: true,
           timer: 3000,
           timerProgressBar: true
         });
@@ -91,7 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels: formattedData.map((item: { category: string; }) => this.formatCategoryLabel(item.category)),
             data: formattedData.map((item: { value: any; }) => item.value)
           };
-
+          this.noChartData = this.charts.map(chart => chart.data.length === 0);
           this.isLoading = false;
         }),
         catchError((err) => {
@@ -101,6 +105,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             icon: 'error',
             title: `Failed to load dashboard charts ${err.message}.`,
             showConfirmButton: false,
+            showCloseButton: true,
             timer: 3000,
             timerProgressBar: true
           });
@@ -111,24 +116,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  formatCategoryLabel(raw: string): string {
-    const trimmed = raw.trim();
-    if (/^[A-Z]{6}$/.test(trimmed)) {
-      const origem = trimmed.slice(0, 3);
-      const destino = trimmed.slice(3, 6);
-      return `${origem} → ${destino}`;
-    }
+formatCategoryLabel(raw: string): string {
+  const trimmed = raw.trim();
 
-    const dateOnly = trimmed.split(" ")[0];
-    const [year, month, day] = dateOnly.split("-");
-    if (year && month && day) {
-      return `${day}/${month}`;
-    }
-
-    return trimmed;
+  // Separa código IATA ex: GRUSDU
+  if (/^[A-Z]{6}$/.test(trimmed)) {
+    const departure = trimmed.slice(0, 3);
+    const arrival = trimmed.slice(3, 6);
+    return `${departure} → ${arrival}`;
   }
 
+  // trata data no formato ISO ou similar
+  const isoDateMatch = trimmed.match(/(\d{4}-\d{2}-\d{2})/); 
+  if (isoDateMatch) {
+    const [year, month, day] = isoDateMatch[0].split("-");
+    return `${day}/${month}`;
+  }
+
+  // trata data truncada tipo '20T03:00:00.000Z/05'
+  const truncatedDateMatch = trimmed.match(/^(\d{2})T.*\/(\d{2})$/);
+  if (truncatedDateMatch) {
+    const day = truncatedDateMatch[1];
+    const month = truncatedDateMatch[2];
+    return `${day}/${month}`;
+  }
+
+  return trimmed;
+}
+
+
   customFiltersTable(record: DashboardTable, filter: string) {
+    
     const normalize = (text: string | number) => text.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const filterValue = normalize(filter);
 

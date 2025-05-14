@@ -261,6 +261,28 @@ body {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+.not-data-found {
+  text-align: center;
+  padding: 50px 0;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  img{
+    width: 100px;
+    opacity: 0.5;
+    margin-bottom: 15px;
+  }
+  .not-data-text {
+    font-size: 16px;
+    color: #888;
+    max-width: 400px;
+    line-height: 1.5;
+  }
+}
+
+
 
 @font-face {
   font-family: 'Material Symbols Outlined';
