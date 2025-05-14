@@ -26,7 +26,7 @@ export class ChartComponent implements OnInit {
             show: false,
           },
           type: 'bar',
-          height: 330
+          height: 315
         },
         series: [{
           name: 'Passageiros',
