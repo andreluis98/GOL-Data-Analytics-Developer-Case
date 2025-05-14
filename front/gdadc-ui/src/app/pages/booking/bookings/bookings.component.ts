@@ -238,7 +238,7 @@ export class BookingsComponent implements OnInit {
 
   adjustFiltersTable(record: BookingTable, filter: string) {
     const normalize = (text: string) =>
-      text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '').toLowerCase();
 
     const filterValue = normalize(filter);
 
@@ -250,12 +250,14 @@ export class BookingsComponent implements OnInit {
     const fields = [
       normalize(record.first_name),
       normalize(record.last_name),
+      normalize(record.first_name + ' ' + record.last_name),
       normalize(formatDateToDisplay(record.birthday)),
       normalize(record.document),
       normalize(formatDateToDisplay(record.departure_date)),
       normalize(formatDateToDisplay(record.arrival_date)),
       normalize(record.departure_iata),
       normalize(record.arrival_iata),
+      normalize(record.departure_iata + ' ' + record.arrival_iata),
     ];
 
     return fields.some((field) => field.includes(filterValue));
