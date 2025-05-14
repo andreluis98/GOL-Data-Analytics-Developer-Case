@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateBookingComponent } from '../../../modals/create-booking/create-booking.component';
 import Swal from 'sweetalert2';
 import { LoadingService } from '../../../core/loading/loading.service';
+import { IataCodesService } from '../../../core/iata-code/iata-codes.service';
 @Component({
   selector: 'app-bookings',
   imports: [
@@ -47,44 +48,47 @@ export class BookingsComponent implements OnInit {
   bookings!: Observable<BookingTable[]>;
   file: File | null = null;
   isLoading: boolean = true;
+  disableAllControls = true;
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
-    @ViewChild(MatSort) sort!: MatSort;
-    dataSource = new MatTableDataSource<BookingTable>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  dataSource = new MatTableDataSource<BookingTable>();
 
-    ngOnInit() {
-      this.getBookings();
-    }
+  ngOnInit() {
+    this.getBookings();
+  }
 
-    getBookings() {
-      this.loadingService.setLoading({ page: 'bookings', loading: true });
-      this.apiService.getBookings().pipe(
-        tap((resp: any) => {
-          this.dataSource = new MatTableDataSource(resp.data);
-          this.dataSource.sortingDataAccessor = (data: BookingTable, col: string) => this.sorts(data, col);
-          this.dataSource.filterPredicate = (data: BookingTable, filter: string) => this.adjustFiltersTable(data, filter);
-          this.isLoading = false;
-          
-          this.cdr.detectChanges();
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.loadingService.setLoading({ page: 'bookings', loading: false });
-        }),
-        catchError((err) => {
-          this.loadingService.setLoading({ page: 'bookings', loading: false });
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: `Unable to load bookings. Please try again later ${err.message}.`,
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true
-          });
-          return '';
-        })
-      ).subscribe()
-    }
+  getBookings() {
+    this.isLoading = true;
+    this.loadingService.setLoading({ page: 'bookings', loading: true });
+    this.apiService.getBookings().pipe(
+      tap((resp: any) => {
+        this.dataSource = new MatTableDataSource(resp.data);
+        this.dataSource.sortingDataAccessor = (data: BookingTable, col: string) => this.sorts(data, col);
+        this.dataSource.filterPredicate = (data: BookingTable, filter: string) => this.adjustFiltersTable(data, filter);
+        this.isLoading = false;
+
+        this.cdr.detectChanges();
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.loadingService.setLoading({ page: 'bookings', loading: false });
+      }),
+      catchError((err) => {
+        this.loadingService.setLoading({ page: 'bookings', loading: false });
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: `Unable to load bookings. Please try again later ${err.message}.`,
+          showConfirmButton: false,
+          showCloseButton: true,
+          timer: 5000,
+          timerProgressBar: true
+        });
+        return '';
+      })
+    ).subscribe()
+  }
 
 
   download() {
@@ -114,6 +118,7 @@ export class BookingsComponent implements OnInit {
           icon: 'success',
           title: 'Bookings downloaded successfully!',
           showConfirmButton: false,
+          showCloseButton: true,
           timer: 3000,
           timerProgressBar: true
         });
@@ -126,6 +131,7 @@ export class BookingsComponent implements OnInit {
           icon: 'error',
           title: `Failed to download bookings ${err.message}.`,
           showConfirmButton: false,
+          showCloseButton: true,
           timer: 3000,
           timerProgressBar: true
         });
@@ -168,34 +174,37 @@ export class BookingsComponent implements OnInit {
             icon: 'success',
             title: 'Bookings uploaded successfully!',
             showConfirmButton: false,
+            showCloseButton: true,
             timer: 3000,
             timerProgressBar: true
-          });               
+          });
         }),
         catchError((err) => {
           Swal.close();
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'error',
-              title: `Failed to upload bookings ${err.message}.`,
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true
-            });
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: `Failed to upload bookings ${err.message}.`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            timer: 3000,
+            timerProgressBar: true
+          });
           return '';
         })
       ).subscribe();
     }
   }
 
-
   createBookingModal(): void {
     const dialogRef = this.dialog.open(CreateBookingComponent, {
       width: '600px',
-      height: '500px',
+      height: '550px',
       panelClass: 'custom-dialog-container',
-      data: this.dataSource.data
+      data: {
+        bookings: this.dataSource.data
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
       result == true ? this.getBookings() : null;
@@ -203,8 +212,6 @@ export class BookingsComponent implements OnInit {
   }
 
   sorts(data: any, col: string) {
-    console.log(data, col);
-    
     const datas = data[col];
     const convertString = (text: string): string => {
       // Convertendo strings com acentos para que conseguia realizar o sort corretamente.
@@ -232,14 +239,14 @@ export class BookingsComponent implements OnInit {
   adjustFiltersTable(record: BookingTable, filter: string) {
     const normalize = (text: string) =>
       text?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  
+
     const filterValue = normalize(filter);
-  
+
     const formatDateToDisplay = (dateStr: string): string => {
       if (!dateStr) return '';
-      return this.datePipe.transform(dateStr, 'dd/MM/yyyy') || ''; 
+      return this.datePipe.transform(dateStr, 'dd/MM/yyyy') || '';
     };
-  
+
     const fields = [
       normalize(record.first_name),
       normalize(record.last_name),
@@ -250,12 +257,9 @@ export class BookingsComponent implements OnInit {
       normalize(record.departure_iata),
       normalize(record.arrival_iata),
     ];
-  
+
     return fields.some((field) => field.includes(filterValue));
   }
-  
-  
-  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
