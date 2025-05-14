@@ -3,14 +3,29 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BookingTable } from '../../models/booking-table/booking-table.model';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ApiService } from '../../core/api/api.service';
-import { catchError, tap } from 'rxjs';
+import { catchError, debounceTime, Subject, switchMap, tap } from 'rxjs';
 import Swal from 'sweetalert2';
-import { DatePipe } from '@angular/common';
-import { MatError } from '@angular/material/form-field';
+import { CommonModule, DatePipe } from '@angular/common';
+import { MatError, MatFormFieldModule } from '@angular/material/form-field';
+import { IataCodesService } from '../../core/iata-code/iata-codes.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-create-booking',
-  imports: [ReactiveFormsModule, MatError],
+  imports: [
+    ReactiveFormsModule,
+    MatError,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './create-booking.component.html',
   styleUrl: './create-booking.component.scss'
 })
@@ -20,9 +35,15 @@ export class CreateBookingComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private data = inject(MAT_DIALOG_DATA);
   dialogRef = inject(MatDialogRef<CreateBookingComponent>);
+  private iataCodesService = inject(IataCodesService);
   bookingTable!: BookingTable;
   bookingForm!: FormGroup;
   today: string | null = null;
+  airports: any[] = [];
+  filteredDeparture: any[] = [];
+  filteredArrival: any[] = [];
+  searchDeparture$ = new Subject<string>();
+  searchArrival$ = new Subject<string>();
 
   ngOnInit(): void {
     this.today = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
@@ -30,12 +51,13 @@ export class CreateBookingComponent implements OnInit {
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
       birthday: ['', Validators.required],
-      document: ['', [Validators.required, this.documentAlreadyExistsValidator(this.data)]],
+      document: ['', [Validators.required, this.documentAlreadyExistsValidator(this.data.bookings), Validators.minLength(7), Validators.maxLength(11)]],
       departure_date: ['', Validators.required],
       departure_iata: ['', Validators.required],
       arrival_iata: ['', Validators.required],
       arrival_date: ['', Validators.required],
     });
+    this.loadingAirports();
   }
 
   documentAlreadyExistsValidator(existingDocs: BookingTable[]): ValidatorFn {
@@ -56,24 +78,23 @@ export class CreateBookingComponent implements OnInit {
             toast: true,
             position: 'top-end',
             icon: 'success',
-            title: 'Reserva criada com sucesso!',
+            title: 'Reservation created successfully!',
             showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
+            showCloseButton: true,
+            timer: 5000,
+            timerProgressBar: true,
           }).then((result) => {
-            if (result.isConfirmed) {
-              ;
-              this.dialogRef.close(true);
-            }
           });
+          this.dialogRef.close(true);
         }),
         catchError((error) => {
           Swal.fire({
             toast: true,
             position: 'top-end',
             icon: 'error',
-            title: 'Erro ao criar a reserva.',
+            title: 'Error creating the reservation.',
             showConfirmButton: false,
+            showCloseButton: true,
             timer: 3000,
             timerProgressBar: true
           });
@@ -81,6 +102,43 @@ export class CreateBookingComponent implements OnInit {
         })
       ).subscribe();
     }
+  }
+
+  loadingAirports() {
+    this.iataCodesService.getCodesIata().subscribe(data => {
+      this.airports = data;
+
+      this.bookingForm.get('departure_iata')?.valueChanges
+        .pipe(debounceTime(300))
+        .subscribe(value => {
+          this.filteredDeparture = this.filterAirports(value).slice(0, 20);
+        });
+
+      this.bookingForm.get('arrival_iata')?.valueChanges
+        .pipe(debounceTime(300))
+        .subscribe(value => {
+          this.filteredArrival = this.filterAirports(value).slice(0, 20);
+        });
+    });
+  }
+
+  filterIATA(event: Event, isDeparture: boolean): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+
+    if (isDeparture) {
+      this.searchDeparture$.next(value);
+    } else {
+      this.searchArrival$.next(value);
+    }
+  }
+
+  filterAirports(value: string): any[] {
+    const filterValue = value.toLowerCase();
+    return this.airports.filter(airport =>
+      airport.iata_code.toLowerCase().includes(filterValue) ||
+      airport.name.toLowerCase().includes(filterValue)
+    );
   }
 
   clearForm(): void {

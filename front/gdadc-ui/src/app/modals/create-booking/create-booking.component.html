@@ -1,60 +1,120 @@
 <div class="dialog-header">
-    <h2>Criar Reserva</h2>
-    <div class="header-actions">
-        <button type="button" class="clear-btn-top" (click)="clearForm()">Clear All Filters</button>
-        <button type="button" class="close-btn" (click)="dialogRef.close(false)">✕</button>
-    </div>
+  <h2>Create Booking</h2>
+  <div class="header-actions">
+    <button type="button" class="clear-btn-top" (click)="clearForm()">Clear All Filters</button>
+    <button type="button" class="close-btn" (click)="dialogRef.close(false)">✕</button>
+  </div>
 </div>
 
-
 <form [formGroup]="bookingForm" (ngSubmit)="createBooking()" class="booking-form">
-    <label>
-        First Name
-        <input formControlName="first_name" />
-    </label>
+  <label>
+    First Name
+    <input formControlName="first_name" />
+    @if(bookingForm.get('first_name')?.hasError('required') && bookingForm.get('first_name')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Last Name
-        <input formControlName="last_name" />
-    </label>
+  <label>
+    Last Name
+    <input formControlName="last_name" />
+    @if(bookingForm.get('last_name')?.hasError('required') && bookingForm.get('last_name')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Data de Nascimento
-        <input formControlName="birthday" type="date" [max]="today"/>
-    </label>
+  <label>
+    Birthday
+    <input formControlName="birthday" type="date" [max]="today" />
+    @if(bookingForm.get('birthday')?.hasError('required') && bookingForm.get('birthday')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label class="input-wrapper">
-        Document
-        <input formControlName="document" />
-        @if (bookingForm.get('document')?.hasError('documentExists')) {
-            <mat-error class="error-message">
-                This document number is already registered.
-            </mat-error>   
-        }
-    </label>
+  <label>
+    Document
+    <input formControlName="document" maxlength="11"/>
+    @if(bookingForm.get('document')?.hasError('required') && bookingForm.get('document')?.touched){
+    <mat-error>
+        This field is required.
+    </mat-error>
+    }
+    @if(bookingForm.get('document')?.hasError('documentExists')){
+    <mat-error>
+        This document number is already registered.
+    </mat-error>
+    }
+    @if(bookingForm.get('document')?.hasError('minlength')){
+        <mat-error>
+            Document must be at least 7 characters for RG.
+        </mat-error>
+    }
+    @if(bookingForm.get('document')?.hasError('maxlength')){
+        <mat-error>
+            Document must be at most 11 characters for CPF.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Data de Partida
-        <input formControlName="departure_date" type="date" [min]="today" />
-    </label>
+  <label>
+    Departure IATA
+    <input formControlName="departure_iata" [matAutocomplete]="autoDeparture" (input)="filterIATA($event, true)" />
+    <mat-autocomplete #autoDeparture="matAutocomplete">
+      <mat-option *ngFor="let airport of filteredDeparture" [value]="airport.iata_code">
+        {{ airport.iata_code }} - {{ airport.name }}
+      </mat-option>
+    </mat-autocomplete>
+    @if(bookingForm.get('departure_iata')?.hasError('required')  && bookingForm.get('departure_iata')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Departure IATA
-        <input formControlName="departure_iata" />
-    </label>
+  <label>
+    Arrival IATA
+    <input formControlName="arrival_iata" [matAutocomplete]="autoArrival" (input)="filterIATA($event, false)" />
+    <mat-autocomplete #autoArrival="matAutocomplete">
+      <mat-option *ngFor="let airport of filteredArrival" [value]="airport.iata_code">
+        {{ airport.iata_code }} - {{ airport.name }}
+      </mat-option>
+    </mat-autocomplete>
+    @if(bookingForm.get('arrival_iata')?.hasError('required') && bookingForm.get('arrival_iata')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
+    
+  <label>
+    Departure Date
+    <input formControlName="departure_date" type="date" [min]="today" />
+    @if(bookingForm.get('departure_date')?.hasError('required') && bookingForm.get('departure_date')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Arrival IATA
-        <input formControlName="arrival_iata" />
-    </label>
+  <label>
+    Arrival Date
+    <input formControlName="arrival_date" type="date" [min]="today" />
+    @if(bookingForm.get('arrival_date')?.hasError('required') && bookingForm.get('arrival_date')?.touched){
+        <mat-error>
+            This field is required.
+        </mat-error>
+    }
+  </label>
 
-    <label>
-        Data de Chegada
-        <input formControlName="arrival_date" type="date" [min]="today" />
-    </label>
-
-    <div class="form-actions">
-        <button type="submit" class="btn-booking" [disabled]="!bookingForm.valid">Criar Reserva</button>
-        <button type="button" class="cancel-btn" (click)="dialogRef.close()">Cancelar</button>
-    </div>
+  <div class="form-actions">
+    <button type="submit" class="btn-booking" [disabled]="!bookingForm.valid">Criar Reserva</button>
+    <button type="button" class="cancel-btn" (click)="dialogRef.close()">Cancelar</button>
+  </div>
 </form>
+
