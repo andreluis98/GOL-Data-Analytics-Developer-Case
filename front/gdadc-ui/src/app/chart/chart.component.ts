@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ChartData } from '../models/chart-data/chart-data.model';
-import { ApexChart, ApexAxisChartSeries, ApexXAxis, ApexYAxis, ApexTooltip, ApexTitleSubtitle, NgApexchartsModule } from 'ng-apexcharts';
+import { ApexChart, NgApexchartsModule } from 'ng-apexcharts';
 @Component({
   selector: 'app-chart',
   imports: [NgApexchartsModule],
@@ -8,7 +8,7 @@ import { ApexChart, ApexAxisChartSeries, ApexXAxis, ApexYAxis, ApexTooltip, Apex
   styleUrl: './chart.component.scss'
 })
 export class ChartComponent implements OnInit {
-  
+
   @Input() data: ChartData | undefined;
   @Input() color: string | undefined;
 
@@ -18,7 +18,7 @@ export class ChartComponent implements OnInit {
     this.graphs();
   }
 
-  graphs(){
+  graphs() {
     if (this.data) {
       this.chartOptions = {
         chart: {
@@ -44,8 +44,8 @@ export class ChartComponent implements OnInit {
         },
         dataLabels: {
           enabled: false
-        }      
         }
-      };
+      }
+    };
   }
 }

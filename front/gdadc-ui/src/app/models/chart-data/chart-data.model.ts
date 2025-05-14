@@ -1,4 +1,4 @@
 export interface ChartData {
-  labels: string[];  
+  labels: string[];
   data: number[];
 }

@@ -56,7 +56,7 @@
         font-weight: 600;
         font-size: 0.9rem;
         color: #333;
-        
+
         input {
             margin-top: 0.3rem;
             padding: 0.5rem;
@@ -64,10 +64,11 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        mat-error{
+
+        mat-error {
             font-size: 12px;
         }
-    } 
+    }
 
     .form-actions {
         width: 100%;

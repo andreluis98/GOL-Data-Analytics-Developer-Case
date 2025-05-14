@@ -11,9 +11,9 @@
     First Name
     <input formControlName="first_name" />
     @if(bookingForm.get('first_name')?.hasError('required') && bookingForm.get('first_name')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
@@ -21,9 +21,9 @@
     Last Name
     <input formControlName="last_name" />
     @if(bookingForm.get('last_name')?.hasError('required') && bookingForm.get('last_name')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
@@ -31,34 +31,34 @@
     Birthday
     <input formControlName="birthday" type="date" [max]="today" />
     @if(bookingForm.get('birthday')?.hasError('required') && bookingForm.get('birthday')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
   <label>
     Document
-    <input formControlName="document" maxlength="11"/>
+    <input formControlName="document" maxlength="11" />
     @if(bookingForm.get('document')?.hasError('required') && bookingForm.get('document')?.touched){
     <mat-error>
-        This field is required.
+      This field is required.
     </mat-error>
     }
     @if(bookingForm.get('document')?.hasError('documentExists')){
     <mat-error>
-        This document number is already registered.
+      This document number is already registered.
     </mat-error>
     }
     @if(bookingForm.get('document')?.hasError('minlength')){
-        <mat-error>
-            Document must be at least 7 characters for RG.
-        </mat-error>
+    <mat-error>
+      Document must be at least 7 characters for RG.
+    </mat-error>
     }
     @if(bookingForm.get('document')?.hasError('maxlength')){
-        <mat-error>
-            Document must be at most 11 characters for CPF.
-        </mat-error>
+    <mat-error>
+      Document must be at most 11 characters for CPF.
+    </mat-error>
     }
   </label>
 
@@ -70,10 +70,10 @@
         {{ airport.iata_code }} - {{ airport.name }}
       </mat-option>
     </mat-autocomplete>
-    @if(bookingForm.get('departure_iata')?.hasError('required')  && bookingForm.get('departure_iata')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    @if(bookingForm.get('departure_iata')?.hasError('required') && bookingForm.get('departure_iata')?.touched){
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
@@ -86,19 +86,19 @@
       </mat-option>
     </mat-autocomplete>
     @if(bookingForm.get('arrival_iata')?.hasError('required') && bookingForm.get('arrival_iata')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
-    
+
   <label>
     Departure Date
     <input formControlName="departure_date" type="date" [min]="today" />
     @if(bookingForm.get('departure_date')?.hasError('required') && bookingForm.get('departure_date')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
@@ -106,9 +106,9 @@
     Arrival Date
     <input formControlName="arrival_date" type="date" [min]="today" />
     @if(bookingForm.get('arrival_date')?.hasError('required') && bookingForm.get('arrival_date')?.touched){
-        <mat-error>
-            This field is required.
-        </mat-error>
+    <mat-error>
+      This field is required.
+    </mat-error>
     }
   </label>
 
@@ -117,4 +117,3 @@
     <button type="button" class="cancel-btn" (click)="dialogRef.close()">Cancelar</button>
   </div>
 </form>
-

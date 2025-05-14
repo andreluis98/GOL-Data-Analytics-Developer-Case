@@ -8,10 +8,10 @@ import { map, Observable } from 'rxjs';
 export class IataCodesService {
   private http = inject(HttpClient);
   airports: any[] = [];
-  
-  getCodesIata(): Observable<any[]> {
+
+getCodesIata(): Observable<any[]> {
   return this.http.get<any[]>('data/airports.json').pipe(
     map(data => data.filter(airport => airport.iata_code))
   );
-}
+ }
 }

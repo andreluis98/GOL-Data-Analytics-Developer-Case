@@ -15,34 +15,34 @@ export class ApiService {
   private baseURL = `${environment.apiUrl}/api/v1/`;
 
   // List all Bookings
-  getBookings(){
-    return this.http.get<BookingTable>(`${this.baseURL}booking`, { headers: this.headerToken.headers})
+  getBookings() {
+    return this.http.get<BookingTable>(`${this.baseURL}booking`, { headers: this.headerToken.headers })
   }
 
   //Download
   downloadFile(): Observable<Blob> {
-    return this.http.get(`${this.baseURL}booking/file/download`, {headers: this.headerToken.headers, responseType: 'blob'});
+    return this.http.get(`${this.baseURL}booking/file/download`, { headers: this.headerToken.headers, responseType: 'blob' });
   }
 
   //Upload
   uploadFile(file: File) {
     const data = new FormData();
     data.append('content', file);
-    return this.http.post(`${this.baseURL}booking/file/upload`, data, { headers: this.headerToken.headers});
+    return this.http.post(`${this.baseURL}booking/file/upload`, data, { headers: this.headerToken.headers });
   }
-  
+
   //Create the booking
-  createBooking(bookingTable :BookingTable){
+  createBooking(bookingTable: BookingTable) {
     return this.http.post(`${this.baseURL}booking`, bookingTable, { headers: this.headerToken.headers });
   }
 
   //Set data for charts
-  getChartData(chartId: number){
+  getChartData(chartId: number) {
     return this.http.get(`${this.baseURL}dashboard/chart/data/${chartId}`, { headers: this.headerToken.headers });
   }
 
   // List air travel data
-  getDashboardTable(){
+  getDashboardTable() {
     return this.http.get<DashboardTable>(`${this.baseURL}dashboard/data`, { headers: this.headerToken.headers })
   }
 }

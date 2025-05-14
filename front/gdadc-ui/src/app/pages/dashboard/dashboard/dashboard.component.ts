@@ -23,7 +23,7 @@ import { LoadingService } from '../../../core/loading/loading.service';
     MatFormFieldModule,
     MatInputModule,
     ChartComponent
-],
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -32,11 +32,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
-  loadingService = inject(LoadingService); 
+  loadingService = inject(LoadingService);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   dataSource = new MatTableDataSource<DashboardTable>();
-  
+
   charts: ChartData[] = [];
   isLoading: boolean = true;
   disableAllControls = true;
@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       tap((resp: any) => {
         this.dataSource.data = resp.data;
         this.isLoading = false;
-         this.cdr.detectChanges();
+        this.cdr.detectChanges();
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.dataSource.filterPredicate = (data: DashboardTable, filter: string) => this.customFiltersTable(data, filter);
@@ -116,37 +116,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
 
-formatCategoryLabel(raw: string): string {
-  const trimmed = raw.trim();
+  formatCategoryLabel(raw: string): string {
+    const trimmed = raw.trim();
 
-  // Separa código IATA ex: GRUSDU
-  if (/^[A-Z]{6}$/.test(trimmed)) {
-    const departure = trimmed.slice(0, 3);
-    const arrival = trimmed.slice(3, 6);
-    return `${departure} → ${arrival}`;
+    // Separa código IATA ex: GRUSDU
+    if (/^[A-Z]{6}$/.test(trimmed)) {
+      const departure = trimmed.slice(0, 3);
+      const arrival = trimmed.slice(3, 6);
+      return `${departure} → ${arrival}`;
+    }
+
+    // trata data no formato ISO ou similar
+    const isoDateMatch = trimmed.match(/(\d{4}-\d{2}-\d{2})/);
+    if (isoDateMatch) {
+      const [year, month, day] = isoDateMatch[0].split("-");
+      return `${day}/${month}`;
+    }
+
+    // trata data truncada tipo '20T03:00:00.000Z/05'
+    const truncatedDateMatch = trimmed.match(/^(\d{2})T.*\/(\d{2})$/);
+    if (truncatedDateMatch) {
+      const day = truncatedDateMatch[1];
+      const month = truncatedDateMatch[2];
+      return `${day}/${month}`;
+    }
+
+    return trimmed;
   }
-
-  // trata data no formato ISO ou similar
-  const isoDateMatch = trimmed.match(/(\d{4}-\d{2}-\d{2})/); 
-  if (isoDateMatch) {
-    const [year, month, day] = isoDateMatch[0].split("-");
-    return `${day}/${month}`;
-  }
-
-  // trata data truncada tipo '20T03:00:00.000Z/05'
-  const truncatedDateMatch = trimmed.match(/^(\d{2})T.*\/(\d{2})$/);
-  if (truncatedDateMatch) {
-    const day = truncatedDateMatch[1];
-    const month = truncatedDateMatch[2];
-    return `${day}/${month}`;
-  }
-
-  return trimmed;
-}
 
 
   customFiltersTable(record: DashboardTable, filter: string) {
-    
+
     const normalize = (text: string | number) => text.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const filterValue = normalize(filter);
 

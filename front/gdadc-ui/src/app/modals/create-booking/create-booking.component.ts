@@ -92,7 +92,7 @@ export class CreateBookingComponent implements OnInit {
             toast: true,
             position: 'top-end',
             icon: 'error',
-            title: 'Error creating the reservation.',
+            title: `Error creating the reservation ${error.message}.`,
             showConfirmButton: false,
             showCloseButton: true,
             timer: 3000,

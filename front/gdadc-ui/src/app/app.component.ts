@@ -8,18 +8,18 @@ import { LoadingService, LoadingState } from './core/loading/loading.service';
     RouterOutlet,
     RouterLink,
     RouterLinkActive
-],
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'gdadc-ui';
   private loadingService = inject(LoadingService);
-  
+
   isLoading = false;
   currentPage = '';
 
-  constructor(){
+  constructor() {
     this.loadingService.loading$.subscribe((state: LoadingState) => {
       setTimeout(() => {
         this.isLoading = state.loading;
