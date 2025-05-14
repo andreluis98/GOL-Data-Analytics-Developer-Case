@@ -147,7 +147,7 @@ formatCategoryLabel(raw: string): string {
 
   customFiltersTable(record: DashboardTable, filter: string) {
     
-    const normalize = (text: string | number) => text.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const normalize = (text: string | number) => text.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '').toLowerCase();
     const filterValue = normalize(filter);
 
     const formatDateToDisplay = (dateStr: string): string => {
@@ -157,7 +157,10 @@ formatCategoryLabel(raw: string): string {
 
     const fields = [
       normalize(formatDateToDisplay(record.date)),
-      normalize(record.iatapair)
+      normalize(record.iatapair),
+      normalize(record.iatapair.slice(0, 3)),
+      normalize(record.iatapair.slice(3, 6)),
+      normalize(record.iatapair.slice(0, 3) + ' ' + record.iatapair.slice(3, 6)),
     ];
 
     return fields.some((field) => field.includes(filterValue));
