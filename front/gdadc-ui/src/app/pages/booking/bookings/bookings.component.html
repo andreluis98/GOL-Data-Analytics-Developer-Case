@@ -64,11 +64,6 @@
           <td mat-cell *matCellDef="let element"> {{element.document}} </td>
         </ng-container>
   
-        <ng-container matColumnDef="departure_date">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
-          <td mat-cell *matCellDef="let element"> {{element.departure_date | date: 'dd/MM/yyyy'}} </td>
-        </ng-container>
-  
         <ng-container matColumnDef="departure_iata">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Iata </th>
           <td mat-cell *matCellDef="let element"> {{element.departure_iata}} </td>
@@ -78,7 +73,12 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Arrival Iata </th>
           <td mat-cell *matCellDef="let element"> {{element.arrival_iata}} </td>
         </ng-container>
-  
+
+        <ng-container matColumnDef="departure_date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.departure_date | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+
         <ng-container matColumnDef="arrival_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Arrival Date </th>
           <td mat-cell *matCellDef="let element"> {{element.arrival_date | date: 'dd/MM/yyyy'}} </td>
