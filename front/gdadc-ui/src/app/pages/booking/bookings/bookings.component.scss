@@ -114,6 +114,10 @@
     background-color: hsl(var(--primary-title)); 
     color: #fff; 
   }
+  &:disabled{
+    opacity: 0.5; 
+    cursor: not-allowed;  
+  }
 }
 
 .material-symbol {
@@ -164,6 +168,7 @@
 ::ng-deep .swal2-container.swal2-top-end.swal2-backdrop-show{
     width: 401px;
 }
+
 
 @keyframes pulse {
   0% {

@@ -15,7 +15,7 @@
         <div *ngFor="let i of [1,2,3,4,5]" class="skeleton skeleton-row"></div>
       </div>
     </div>
-  }@else {
+  }@else if(!isLoading && this.dataSource.data.length > 0) {
     <div class="title">
       <h2>Booking Management</h2>
     </div>
@@ -36,8 +36,9 @@
         <input hidden type="file" #fileInput (change)="onFileInput(fileInput.files)" />
       </div>
       <mat-form-field appearance="fill">
-        <mat-label> Type to filter </mat-label>
+        <mat-label>Type to filter</mat-label>
         <input matInput (keyup)="applyFilter($event)">
+         <span matSuffix class="material-symbols-outlined">search</span>
       </mat-form-field>
     </div>
     <div class="table-container">
@@ -99,5 +100,98 @@
     </div>
     <mat-paginator [pageSize]="150" [pageSizeOptions]="[5, 10, 20, 50, 150, 300, 500, 700, 1000]" showFirstLastButtons>
     </mat-paginator>
-  }
+  }@else if (!isLoading && this.dataSource.data.length == 0){
+    <div class="title">
+      <h2>Booking Management</h2>
+    </div>
+    <div class="table-container">
+      <div class="filter-title">
+      <div class="table-actions">
+        <button class="material-btn-outline" (click)="createBookingModal()">
+          <span class="material-symbol">add</span>
+          Create Booking
+        </button>
+        <button class="material-btn-outline" (click)="fileInput.click()">
+          <span class="material-symbol">upload</span>
+          {{ file ? file.name : 'Upload Bookings' }}
+        </button>
+        <input hidden type="file" #fileInput (change)="onFileInput(fileInput.files)" />
+        <button class="material-btn-outline" [disabled]="disableAllControls" (click)="download()">
+          <span class="material-symbol">download</span>
+          Download Bookings
+        </button>
+      </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Type to filter</mat-label>
+        <input matInput [disabled]="disableAllControls" (keyup)="applyFilter($event)">
+         <span matSuffix class="material-symbols-outlined">search</span>
+      </mat-form-field>
+    </div>
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full material-table">
+  
+        <ng-container matColumnDef="first_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.first_name}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="last_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.last_name}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="birthday">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Birthday </th>
+          <td mat-cell *matCellDef="let element"> {{ element.birthday | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="document">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
+          <td mat-cell *matCellDef="let element"> {{element.document}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="departure_date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.departure_date | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="departure_iata">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Iata </th>
+          <td mat-cell *matCellDef="let element"> {{element.departure_iata}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="arrival_iata">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Arrival Iata </th>
+          <td mat-cell *matCellDef="let element"> {{element.arrival_iata}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="arrival_date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Arrival Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.arrival_date | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.created_at | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="updated_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated Date </th>
+          <td mat-cell *matCellDef="let element"> {{element.updated_at | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+            <td [attr.colspan]="displayedColumns.length">
+              <div class="not-data-found">
+                <img src="/img/no-data.png" alt="no-data" />
+                No data found. Please <strong>upload a CSV file</strong> or <strong>create a new booking</strong>.
+              </div>
+            </td>
+          </tr>
+      </table>
+    </div>
+    <mat-paginator [pageSize]="150" [pageSizeOptions]="[5, 10, 20, 50, 150, 300, 500, 700, 1000]" showFirstLastButtons>
+    </mat-paginator>
+}
 </div>
